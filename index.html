@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PhishGuard - Student-Focused URL Safety Analyzer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Playfair Display (Serif Accent) & Plus Jakarta Sans (Clean UI) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-cream: #FDFBF7;
+            --card-bg: #FFFFFF;
+            --card-subtle: #FBF7F1;
+            --border-warm: #EFE3D3;
+            --border-darker: #E2D3BF;
+            --text-main: #3D3231;
+            --text-muted: #726362;
+            --text-light: #9E8E8C;
+
+            --sage-green: #557A56;
+            --sage-bg: #EBF2EB;
+            --sage-border: #C1D7C1;
+
+            --amber-warm: #B87333;
+            --amber-bg: #FEF6ED;
+            --amber-border: #F3D9C1;
+
+            --rose-warm: #B94A48;
+            --rose-bg: #FDF0ED;
+            --rose-border: #F2C7C3;
+        }
+
+        body {
+            background-color: var(--bg-cream);
+            color: var(--text-main);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            min-height: 100vh;
+        }
+
+        .font-serif-heading {
+            font-family: 'Playfair Display', Georgia, serif;
+        }
+
+        .bg-cream-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-warm);
+        }
+
+        .bg-cream-subtle {
+            background-color: var(--card-subtle);
+            border: 1px solid var(--border-warm);
+        }
+
+        /* Custom Scrollbars */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F5E8DD;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #D8C3B0;
+            border-radius: 4px;
+        }
+
+        /* Subtle Transitions */
+        .interactive-hover {
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .interactive-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -4px rgba(74, 62, 61, 0.08);
+        }
+
+        /* Score Meter Pulse */
+        @keyframes subtle-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+        .pulse-verdict {
+            animation: subtle-pulse 3s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="antialiased pb-16">
+
+    <!-- Top Announcement Banner -->
+    <div class="bg-[#F5E8DD] border-b border-[#EFE3D3] text-[#4A3E3D] px-4 py-2.5 text-xs md:text-sm font-medium">
+        <div class="max-w-6xl mx-auto flex flex-wrap justify-between items-center gap-2">
+            <div class="flex items-center gap-2">
+                <span class="bg-[#3D3231] text-[#FDFBF7] text-[10px] uppercase tracking-wider px-2 py-0.5 rounded font-semibold">SANKALP 2026</span>
+                <span>Chennai Institute of Technology Innovation Entry</span>
+            </div>
+            <div class="text-[#726362] text-xs">
+                Theme: <strong class="text-[#3D3231]">Defence, Aerospace & Strategic Tech (Cybersecurity)</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Navigation / Header -->
+    <header class="max-w-6xl mx-auto px-4 sm:px-6 pt-8 pb-6">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#EFE3D3] pb-6">
+            <div>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-[#3D3231] text-[#FDFBF7] flex items-center justify-center font-serif-heading font-bold text-xl shadow-sm">
+                        P
+                    </div>
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold font-serif-heading text-[#3D3231] tracking-tight">PhishGuard</h1>
+                        <p class="text-xs text-[#726362] font-medium tracking-wide">STUDENT-FOCUSED URL SAFETY & ANATOMY ANALYZER</p>
+                    </div>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#EBF2EB] text-[#557A56] border border-[#C1D7C1]">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    Rule-Based Heuristic Engine
+                </span>
+                <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-[#F5E8DD] text-[#4A3E3D] border border-[#EFE3D3]">
+                    100% Client-Side Safe
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+
+        <!-- URL Input Card -->
+        <section class="bg-cream-card rounded-2xl p-6 sm:p-8 shadow-sm border border-[#EFE3D3] interactive-hover">
+            <div class="max-w-3xl mx-auto">
+                <label for="urlInput" class="block font-serif-heading text-xl sm:text-2xl font-semibold text-[#3D3231] mb-2">
+                    Enter any website link to analyze
+                </label>
+                <p class="text-sm text-[#726362] mb-6">
+                    Paste links received on WhatsApp, Discord, or Instagram to inspect hidden risks before opening them.
+                </p>
+
+                <!-- Input Field & Main CTA -->
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <div class="relative flex-grow">
+                        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-[#9E8E8C]">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        </div>
+                        <input 
+                            type="text" 
+                            id="urlInput" 
+                            placeholder="e.g. http://g00gle-security-check.tk/verify-account"
+                            class="w-full pl-11 pr-4 py-3.5 bg-[#FDFBF7] border border-[#E2D3BF] rounded-xl text-[#3D3231] placeholder-[#A89A98] focus:outline-none focus:ring-2 focus:ring-[#3D3231] focus:border-transparent text-sm sm:text-base font-mono transition-all"
+                            value="http://g00gle-security-check.tk/login/verify-student-id?user=exam"
+                        >
+                    </div>
+                    <button 
+                        id="analyzeBtn" 
+                        class="px-6 py-3.5 bg-[#3D3231] hover:bg-[#2A2221] text-[#FDFBF7] font-semibold rounded-xl text-sm sm:text-base transition-colors flex items-center justify-center gap-2 shadow-md shrink-0 cursor-pointer"
+                    >
+                        <span>Analyze URL</span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                    </button>
+                </div>
+
+                <!-- Quick Presets -->
+                <div class="mt-6 pt-5 border-t border-[#F5E8DD]">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <span class="text-xs font-semibold text-[#726362] uppercase tracking-wider mr-1">Quick Presets:</span>
+
+                        <button onclick="loadPreset('safe')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#EBF2EB] hover:bg-[#DCEADA] text-[#3D5A3E] border border-[#C1D7C1] transition-colors cursor-pointer">
+                            🟢 Safe Official Site
+                        </button>
+
+                        <button onclick="loadPreset('typosquat')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#FDF0ED] hover:bg-[#F8E0DC] text-[#9A3836] border border-[#F2C7C3] transition-colors cursor-pointer">
+                            🔴 Brand Typosquatting
+                        </button>
+
+                        <button onclick="loadPreset('ip')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#FDF0ED] hover:bg-[#F8E0DC] text-[#9A3836] border border-[#F2C7C3] transition-colors cursor-pointer">
+                            🔴 Raw IP Hostname
+                        </button>
+
+                        <button onclick="loadPreset('suspiciousTld')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#FEF6ED] hover:bg-[#F8E9D7] text-[#93521D] border border-[#F3D9C1] transition-colors cursor-pointer">
+                            🟡 High-Risk TLD & Depth
+                        </button>
+
+                        <button onclick="loadPreset('atSymbol')" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#FEF6ED] hover:bg-[#F8E9D7] text-[#93521D] border border-[#F3D9C1] transition-colors cursor-pointer">
+                            🟡 Deceptive `@` Symbol
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 1: Safety Verdict & Score Card -->
+        <section id="verdictSection" class="bg-cream-card rounded-2xl p-6 sm:p-8 border border-[#EFE3D3] shadow-sm">
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+
+                <!-- Score Circle / Badge -->
+                <div class="md:col-span-4 flex flex-col items-center justify-center p-6 bg-cream-subtle rounded-xl border border-[#EFE3D3] text-center">
+                    <span class="text-xs font-bold text-[#726362] uppercase tracking-wider mb-2">Safety Score</span>
+
+                    <div class="relative w-32 h-32 flex items-center justify-center my-2">
+                        <!-- Canvas gauge -->
+                        <svg class="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
+                            <path
+                                class="text-[#EFE3D3]"
+                                stroke-width="3.5"
+                                stroke="currentColor"
+                                fill="none"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                            <path
+                                id="scoreGaugePath"
+                                class="text-[#B94A48] transition-all duration-1000 ease-out"
+                                stroke-dasharray="100, 100"
+                                stroke-dashoffset="75"
+                                stroke-linecap="round"
+                                stroke-width="3.5"
+                                stroke="currentColor"
+                                fill="none"
+                                d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                            />
+                        </svg>
+                        <div class="absolute flex flex-col items-center">
+                            <span id="scoreValue" class="text-3xl font-bold font-serif-heading text-[#3D3231]">25</span>
+                            <span class="text-[10px] text-[#726362] font-semibold uppercase">out of 100</span>
+                        </div>
+                    </div>
+
+                    <div id="verdictBadge" class="mt-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-[#FDF0ED] text-[#B94A48] border border-[#F2C7C3] pulse-verdict">
+                        🔴 High Risk Link
+                    </div>
+                </div>
+
+                <!-- Verdict Detailed Description -->
+                <div class="md:col-span-8 space-y-4">
+                    <div class="flex items-center justify-between border-b border-[#F5E8DD] pb-3">
+                        <h2 class="text-xl font-bold font-serif-heading text-[#3D3231]" id="verdictTitle">
+                            High Risk Scam / Phishing Link
+                        </h2>
+                        <span id="riskLevelTag" class="text-xs font-semibold px-2.5 py-1 rounded bg-[#FDF0ED] text-[#B94A48]">
+                            4 Severe Warnings
+                        </span>
+                    </div>
+
+                    <p id="verdictSummary" class="text-sm text-[#4A3E3D] leading-relaxed">
+                        This URL exhibits multiple strong indicators of fraudulent intent, including impersonation of a well-known brand (<strong class="text-[#B94A48]">google</strong>), use of an unencrypted HTTP protocol, and a high-risk free top-level domain (<strong class="text-[#B94A48]">.tk</strong>).
+                    </p>
+
+                    <div class="bg-cream-subtle rounded-xl p-4 border border-[#EFE3D3] space-y-2">
+                        <div class="text-xs font-bold uppercase text-[#726362] tracking-wider">Primary Concerns Detected:</div>
+                        <ul id="primaryConcernsList" class="text-xs text-[#3D3231] space-y-1.5 list-disc pl-4">
+                            <!-- Populated dynamically -->
+                        </ul>
+                    </div>
+
+                    <div id="actionRecommendation" class="p-3.5 rounded-xl bg-[#FDF0ED] border border-[#F2C7C3] text-xs text-[#B94A48] flex items-center gap-2.5">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192-3 1.732-3z"/></svg>
+                        <span><strong>Recommendation:</strong> Do NOT click this link or enter any login credentials or personal passwords.</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- SECTION 2: Interactive URL Anatomy Inspector -->
+        <section class="bg-cream-card rounded-2xl p-6 sm:p-8 border border-[#EFE3D3] shadow-sm">
+            <div class="mb-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-xl sm:text-2xl font-bold font-serif-heading text-[#3D3231]">URL Anatomy Inspector</h2>
+                        <p class="text-xs sm:text-sm text-[#726362] mt-1">
+                            Click or hover over any dissected piece below to inspect what it means and how attackers manipulate it.
+                        </p>
+                    </div>
+                    <span class="text-xs bg-[#F5E8DD] text-[#4A3E3D] px-2.5 py-1 rounded-md font-mono hidden sm:inline-block">
+                        Interactive Dissection
+                    </span>
+                </div>
+            </div>
+
+            <!-- Dissected Pills Container -->
+            <div class="p-4 bg-cream-subtle rounded-xl border border-[#E2D3BF] overflow-x-auto">
+                <div class="text-xs font-semibold text-[#726362] uppercase tracking-wider mb-2">Live Structural Decomposition:</div>
+                <div id="anatomyContainer" class="flex flex-wrap items-center gap-1.5 font-mono text-xs sm:text-sm">
+                    <!-- Populated dynamically with interactive component pills -->
+                </div>
+            </div>
+
+            <!-- Anatomy Component Detail Inspector Card -->
+            <div id="anatomyDetailCard" class="mt-4 p-5 rounded-xl bg-[#FDFBF7] border border-[#EFE3D3] transition-all">
+                <div class="flex items-center gap-2 text-sm font-bold text-[#3D3231] mb-1">
+                    <span id="anatomyPartBadge" class="px-2 py-0.5 rounded text-xs bg-[#3D3231] text-white">Protocol</span>
+                    <span id="anatomyPartValue" class="font-mono text-[#B94A48]">http://</span>
+                </div>
+                <p id="anatomyPartExplanation" class="text-xs sm:text-sm text-[#4A3E3D] mt-2 leading-relaxed">
+                    Select a component from the URL breakdown above to inspect its security role.
+                </p>
+                <div id="anatomyPartRiskNote" class="mt-3 text-xs p-2.5 rounded bg-[#FEF6ED] border border-[#F3D9C1] text-[#93521D] font-medium">
+                    <!-- Dynamic tip -->
+                </div>
+            </div>
+        </section>
+
+        <!-- SECTION 3: Automated Security Heuristic Engine Cards -->
+        <section class="space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                    <h2 class="text-xl sm:text-2xl font-bold font-serif-heading text-[#3D3231]">Security Heuristics Breakdown</h2>
+                    <p class="text-xs sm:text-sm text-[#726362]">
+                        Automated checks evaluated against known web safety standards and scam patterns.
+                    </p>
+                </div>
+                <div class="text-xs text-[#726362]">
+                    7 Safety Rules Checked
+                </div>
+            </div>
+
+            <!-- Grid of 7 Detailed Rules -->
+            <div id="heuristicsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Dynamically generated heuristic cards -->
+            </div>
+        </section>
+
+        <!-- SECTION 4: Student Educational Security Companion -->
+        <section class="bg-cream-card rounded-2xl p-6 sm:p-8 border border-[#EFE3D3] shadow-sm">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-8 h-8 rounded-lg bg-[#EBF2EB] text-[#557A56] flex items-center justify-center font-bold text-base border border-[#C1D7C1]">
+                    💡
+                </div>
+                <div>
+                    <h2 class="text-lg sm:text-xl font-bold font-serif-heading text-[#3D3231]">Student Defense Checklist</h2>
+                    <p class="text-xs text-[#726362]">How to protect yourself on WhatsApp, Discord, and Instagram</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="p-4 rounded-xl bg-cream-subtle border border-[#EFE3D3] space-y-2">
+                    <div class="text-xs font-bold text-[#3D3231] uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-[#B94A48]"></span>
+                        1. Check the Domain Core
+                    </div>
+                    <p class="text-xs text-[#726362] leading-relaxed">
+                        Always look at the name right before <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">.com</code> or <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">.org</code>. If it says <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">google.com.scam.tk</code>, the actual site is <code class="bg-[#3D3231] text-white px-1 rounded">scam.tk</code>!
+                    </p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-cream-subtle border border-[#EFE3D3] space-y-2">
+                    <div class="text-xs font-bold text-[#3D3231] uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-[#B87333]"></span>
+                        2. Look for Number Substitutions
+                    </div>
+                    <p class="text-xs text-[#726362] leading-relaxed">
+                        Scammers swap letters with numbers to trick your eyes: <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">0</code> for <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">O</code>, <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">1</code> for <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">l</code> or <code class="bg-[#F5E8DD] px-1 rounded text-[#3D3231]">i</code>. (e.g. <code class="text-[#B94A48] font-bold">paypa1.com</code>).
+                    </p>
+                </div>
+
+                <div class="p-4 rounded-xl bg-cream-subtle border border-[#EFE3D3] space-y-2">
+                    <div class="text-xs font-bold text-[#3D3231] uppercase tracking-wider flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-[#557A56]"></span>
+                        3. Beware Free Gift Claims
+                    </div>
+                    <p class="text-xs text-[#726362] leading-relaxed">
+                        Links offering "Free Discord Nitro", "Free V-Bucks", or "Leaked Exam Papers" on non-official domains are almost 100% credential-harvesting scams.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="max-w-6xl mx-auto px-4 sm:px-6 mt-12 pt-6 border-t border-[#EFE3D3] text-center text-xs text-[#726362] space-y-2">
+        <p class="font-medium text-[#3D3231]">
+            PhishGuard &copy; 2026 &bull; SANKALP Student Innovation Entry
+        </p>
+        <p class="text-[11px]">
+            Designed for Chennai Institute of Technology Evaluation &bull; Built with HTML5, Tailwind CSS &amp; Pure JavaScript
+        </p>
+    </footer>
+
+    <!-- ================================================================= -->
+    <!-- JAVASCRIPT LOGIC ENGINE -->
+    <!-- ================================================================= -->
+    <script>
+
+        // High-risk TLD list commonly associated with free or low-cost phishing campaigns
+        const HIGH_RISK_TLDS = [
+            'tk', 'ml', 'ga', 'cf', 'gq', 'zip', 'top', 'xyz', 'biz', 
+            'download', 'work', 'click', 'link', 'country', 'kim', 'science', 'g0v'
+        ];
+
+        // Popular target brand names for typosquatting checks
+        const BRAND_TARGETS = [
+            { name: 'google', domains: ['google.com', 'google.co.in'] },
+            { name: 'youtube', domains: ['youtube.com'] },
+            { name: 'facebook', domains: ['facebook.com'] },
+            { name: 'instagram', domains: ['instagram.com'] },
+            { name: 'whatsapp', domains: ['whatsapp.com'] },
+            { name: 'discord', domains: ['discord.com', 'discord.gg'] },
+            { name: 'roblox', domains: ['roblox.com'] },
+            { name: 'steam', domains: ['steampowered.com'] },
+            { name: 'paypal', domains: ['paypal.com'] },
+            { name: 'amazon', domains: ['amazon.com', 'amazon.in'] },
+            { name: 'microsoft', domains: ['microsoft.com'] },
+            { name: 'apple', domains: ['apple.com'] },
+            { name: 'netflix', domains: ['netflix.com'] },
+            { name: 'sbi', domains: ['sbi.co.in'] },
+            { name: 'hdfc', domains: ['hdfcbank.com'] }
+        ];
+
+        // Presets Data
+        const PRESETS = {
+            safe: 'https://www.wikipedia.org/wiki/Computer_security',
+            typosquat: 'http://g00gle-security-check.com/verify-student-id?user=exam',
+            ip: 'http://192.168.1.100/secure-bank/login.php?ref=mail',
+            suspiciousTld: 'http://free-discord-nitro.claim-gift.tk/login/auth',
+            atSymbol: 'http://paypal.com@login-member-verification.org/security'
+        };
+
+
+        /**
+         * Calculate Levenshtein Distance between two strings
+         */
+        function levenshteinDistance(a, b) {
+            const matrix = [];
+            for (let i = 0; i <= b.length; i++) matrix[i] = [i];
+            for (let j = 0; j <= a.length; j++) matrix[0][j] = j;
+
+            for (let i = 1; i <= b.length; i++) {
+                for (let j = 1; j <= a.length; j++) {
+                    if (b.charAt(i - 1) === a.charAt(j - 1)) {
+                        matrix[i][j] = matrix[i - 1][j - 1];
+                    } else {
+                        matrix[i][j] = Math.min(
+                            matrix[i - 1][j - 1] + 1,
+                            matrix[i][j - 1] + 1,
+                            matrix[i - 1][j] + 1
+                        );
+                    }
+                }
+            }
+            return matrix[b.length][a.length];
+        }
+
+        /**
+         * Replaces common leetspeak character substitutions with standard letters
+         */
+        function normalizeLeetspeak(str) {
+            return str.toLowerCase()
+                .replace(/0/g, 'o')
+                .replace(/1/g, 'i')
+                .replace(/3/g, 'e')
+                .replace(/4/g, 'a')
+                .replace(/5/g, 's')
+                .replace(/7/g, 't')
+                .replace(/8/g, 'b')
+                .replace(/@/g, 'a');
+        }
+
+
+        /**
+         * Core Analysis Engine
+         */
+        function analyzeURL(rawInput) {
+            let input = rawInput.trim();
+            if (!input) return null;
+
+            // Ensure protocol exists for standard JS URL parsing
+            let hasExplicitProtocol = /^https?:\/\//i.test(input);
+            let parseableUrl = hasExplicitProtocol ? input : 'http://' + input;
+
+            let parsed = null;
+            try {
+                parsed = new URL(parseableUrl);
+            } catch (e) {
+                return { invalid: true, raw: input };
+            }
+
+            const protocol = parsed.protocol; // "http:" or "https:"
+            const hostname = parsed.hostname; // e.g. "sub.domain.com"
+            const pathname = parsed.pathname;
+            const search = parsed.search;
+            const port = parsed.port;
+
+            // Check if hostname is an IP address
+            const isIpAddress = /^(\d{1,3}\.){3}\d{1,3}$/.test(hostname);
+
+            // Split hostname into parts
+            const hostParts = hostname.split('.');
+            const tld = hostParts.length > 1 ? hostParts[hostParts.length - 1].toLowerCase() : '';
+            const mainDomainName = hostParts.length >= 2 ? hostParts[hostParts.length - 2].toLowerCase() : hostname;
+            const subdomains = hostParts.length > 2 ? hostParts.slice(0, hostParts.length - 2).join('.') : '';
+
+            // -------------------------------------------------------------
+            // HEURISTIC EVALUATIONS & PENALTIES
+            // -------------------------------------------------------------
+            let score = 100;
+            const rules = [];
+
+            // 1. Encryption Protocol (HTTPS vs HTTP)
+            const isHttps = protocol === 'https:';
+            if (!isHttps) {
+                score -= 20;
+                rules.push({
+                    id: 'protocol',
+                    title: 'Encryption Protocol',
+                    status: 'fail',
+                    badge: '🔴 Unencrypted (HTTP)',
+                    explanation: 'This link uses insecure HTTP instead of HTTPS. Anyone on your Wi-Fi network could intercept passwords or data sent to this site.'
+                });
+            } else {
+                rules.push({
+                    id: 'protocol',
+                    title: 'Encryption Protocol',
+                    status: 'pass',
+                    badge: '🟢 Secure HTTPS',
+                    explanation: 'Uses SSL/TLS encryption (HTTPS). Traffic between your device and the site is encrypted.'
+                });
+            }
+
+            // 2. Hostname Type (IP vs Domain Name)
+            if (isIpAddress) {
+                score -= 35;
+                rules.push({
+                    id: 'hostnameType',
+                    title: 'Server Identity',
+                    status: 'fail',
+                    badge: '🔴 Raw IP Hostname',
+                    explanation: 'The link points directly to a raw IP address (e.g., 192.168.1.1) rather than a registered domain name. Legitimate websites almost never ask users to log in directly via IP addresses.'
+                });
+            } else {
+                rules.push({
+                    id: 'hostnameType',
+                    title: 'Server Identity',
+                    status: 'pass',
+                    badge: '🟢 Registered Domain',
+                    explanation: 'The link uses a named registered domain hostname rather than a suspicious raw IP number.'
+                });
+            }
+
+            // 3. Brand Impersonation & Typosquatting Check
+            let typosquatDetected = false;
+            let matchedBrand = '';
+
+            if (!isIpAddress) {
+                const normalizedHost = normalizeLeetspeak(hostname);
+
+                for (let brand of BRAND_TARGETS) {
+                    const brandName = brand.name;
+                    // Check if normalized host contains the brand name, but original host is NOT the official domain
+                    const isOfficialDomain = brand.domains.some(d => hostname.endsWith(d));
+
+                    if (!isOfficialDomain) {
+                        if (normalizedHost.includes(brandName)) {
+                            typosquatDetected = true;
+                            matchedBrand = brandName;
+                            break;
+                        }
+
+                        // Check Levenshtein distance on main domain name
+                        const dist = levenshteinDistance(normalizeLeetspeak(mainDomainName), brandName);
+                        if (dist > 0 && dist <= 2 && mainDomainName.length >= 4) {
+                            typosquatDetected = true;
+                            matchedBrand = brandName;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (typosquatDetected) {
+                score -= 35;
+                rules.push({
+                    id: 'typosquat',
+                    title: 'Brand Impersonation',
+                    status: 'fail',
+                    badge: `🔴 Spoofing '${matchedBrand.toUpperCase()}'`,
+                    explanation: `This link appears to imitate the popular brand "${matchedBrand}" using letter/number replacements or deceptive subdomains to trick you into entering credentials.`
+                });
+            } else {
+                rules.push({
+                    id: 'typosquat',
+                    title: 'Brand Impersonation',
+                    status: 'pass',
+                    badge: '🟢 No Spoofing Found',
+                    explanation: 'No obvious typosquatting or brand impersonation patterns were detected for major popular services.'
+                });
+            }
+
+            // 4. Subdomain Depth & Complexity
+            const subdomainCount = subdomains ? subdomains.split('.').length : 0;
+            if (subdomainCount >= 2) {
+                score -= 20;
+                rules.push({
+                    id: 'subdomains',
+                    title: 'Subdomain Depth',
+                    status: 'warning',
+                    badge: `🟡 ${subdomainCount} Subdomains Deep`,
+                    explanation: `Multiple subdomains detected (${subdomains}). Attackers often stack subdomains like "login.paypal.com.attacker.com" to hide the real domain on phone screens.`
+                });
+            } else {
+                rules.push({
+                    id: 'subdomains',
+                    title: 'Subdomain Depth',
+                    status: 'pass',
+                    badge: '🟢 Standard Structure',
+                    explanation: 'Clean subdomain depth. The URL structure does not attempt to hide its true domain behind excessive sublayers.'
+                });
+            }
+
+            // 5. Top-Level Domain (TLD) Reputation
+            const isHighRiskTld = HIGH_RISK_TLDS.includes(tld);
+            if (isHighRiskTld) {
+                score -= 25;
+                rules.push({
+                    id: 'tld',
+                    title: 'TLD Safety Class',
+                    status: 'warning',
+                    badge: `🟡 High-Risk TLD (.${tld})`,
+                    explanation: `Top-Level Domain '.${tld}' is frequently used in free/disposable phishing campaigns due to low verification requirements.`
+                });
+            } else {
+                rules.push({
+                    id: 'tld',
+                    title: 'TLD Safety Class',
+                    status: 'pass',
+                    badge: `🟢 Standard TLD (.${tld || 'com'})`,
+                    explanation: `Uses a standard, well-regulated Top-Level Domain (e.g. .org, .com, .in).`
+                });
+            }
+
+            // 6. Deceptive Symbols (@, Excessive Hyphens)
+            const hasAtSymbol = input.includes('@');
+            const hyphenCount = (hostname.match(/-/g) || []).length;
+
+            if (hasAtSymbol) {
+                score -= 30;
+                rules.push({
+                    id: 'symbols',
+                    title: 'Deceptive Characters',
+                    status: 'fail',
+                    badge: '🔴 Contains `@` Redirect',
+                    explanation: 'Contains an `@` symbol! Browsers ignore everything before the `@` symbol, meaning `paypal.com@scam.org` actually opens `scam.org`!'
+                });
+            } else if (hyphenCount >= 3) {
+                score -= 15;
+                rules.push({
+                    id: 'symbols',
+                    title: 'Deceptive Characters',
+                    status: 'warning',
+                    badge: `🟡 Excessive Hyphens (${hyphenCount})`,
+                    explanation: 'The hostname contains multiple hyphens. Attackers frequently string together words like "verify-login-account-update.com".'
+                });
+            } else {
+                rules.push({
+                    id: 'symbols',
+                    title: 'Deceptive Characters',
+                    status: 'pass',
+                    badge: '🟢 Clean Formatting',
+                    explanation: 'No deceptive `@` redirect characters or suspicious multi-hyphen patterns were found.'
+                });
+            }
+
+            // 7. URL Length
+            if (input.length > 75) {
+                score -= 10;
+                rules.push({
+                    id: 'length',
+                    title: 'URL Length',
+                    status: 'warning',
+                    badge: `🟡 Long URL (${input.length} chars)`,
+                    explanation: 'Unusually long URL. Attackers create long web addresses to push suspicious domain names off the visible screen on mobile browsers.'
+                });
+            } else {
+                rules.push({
+                    id: 'length',
+                    title: 'URL Length',
+                    status: 'pass',
+                    badge: '🟢 Normal Length',
+                    explanation: 'Concisely formatted link length within standard ranges.'
+                });
+            }
+
+            // Clamp Score 0 to 100
+            score = Math.max(0, Math.min(100, score));
+
+            return {
+                raw: input,
+                parsed: parsed,
+                protocol: protocol,
+                hostname: hostname,
+                subdomains: subdomains,
+                mainDomainName: mainDomainName,
+                tld: tld,
+                pathname: pathname,
+                search: search,
+                isIpAddress: isIpAddress,
+                score: score,
+                rules: rules,
+                typosquatDetected: typosquatDetected,
+                matchedBrand: matchedBrand
+            };
+        }
+
+
+        /**
+         * Render Interactive URL Dissection Pills
+         */
+        function renderAnatomy(data) {
+            const container = document.getElementById('anatomyContainer');
+            container.innerHTML = '';
+
+            if (data.invalid) {
+                container.innerHTML = '<span class="text-rose-600 font-sans">Invalid URL format entered.</span>';
+                return;
+            }
+
+            const parts = [];
+
+            // Protocol
+            parts.push({
+                label: 'Protocol',
+                value: data.protocol + '//',
+                type: data.protocol === 'https:' ? 'safe' : 'danger',
+                explanation: 'The Protocol defines how data is transferred. "https://" means encrypted traffic, while "http://" is unencrypted and vulnerable to eavesdropping.',
+                riskTip: data.protocol === 'https:' ? '🟢 Secure HTTPS protocol verified.' : '⚠️ Warning: Unencrypted HTTP connection!'
+            });
+
+            // Subdomains (if present)
+            if (data.subdomains) {
+                parts.push({
+                    label: 'Subdomains',
+                    value: data.subdomains + '.',
+                    type: data.subdomains.length > 15 ? 'warning' : 'neutral',
+                    explanation: 'Subdomains prefix the main domain name. Scammers often put trusted names here (like "google.com.verify-id.tk") to deceive users.',
+                    riskTip: '💡 Tip: Always look to the right for the main domain name before the TLD.'
+                });
+            }
+
+            // Main Domain
+            parts.push({
+                label: 'Main Domain',
+                value: data.mainDomainName,
+                type: data.typosquatDetected ? 'danger' : 'safe',
+                explanation: 'The Main Domain is the registered identity of the website owner. This is the most crucial part of any URL.',
+                riskTip: data.typosquatDetected ? `🚨 Brand Spoofing Alert: This domain imitates ${data.matchedBrand.toUpperCase()}!` : '🟢 Domain name appears legitimate.'
+            });
+
+            // TLD
+            if (data.tld) {
+                const isHighRisk = HIGH_RISK_TLDS.includes(data.tld);
+                parts.push({
+                    label: 'Top-Level Domain (TLD)',
+                    value: '.' + data.tld,
+                    type: isHighRisk ? 'warning' : 'safe',
+                    explanation: 'The Top-Level Domain (TLD) is the suffix at the end (e.g. .org, .com, .tk). Free or unrestricted TLDs have higher phishing rates.',
+                    riskTip: isHighRisk ? `⚠️ Notice: .${data.tld} is a high-risk TLD frequently used in disposable phishing.` : '🟢 Recognized standard Top-Level Domain.'
+                });
+            }
+
+            // Path & Search
+            if (data.pathname && data.pathname !== '/') {
+                parts.push({
+                    label: 'File Path',
+                    value: data.pathname,
+                    type: 'neutral',
+                    explanation: 'The Path specifies the specific page or folder on the server (e.g., /login or /verify).',
+                    riskTip: 'Path location on server.'
+                });
+            }
+
+            if (data.search) {
+                parts.push({
+                    label: 'Query Parameters',
+                    value: data.search,
+                    type: 'neutral',
+                    explanation: 'Query parameters pass extra data to the webpage after a "?" symbol (e.g. ?user=student).',
+                    riskTip: 'Parameters attached to request.'
+                });
+            }
+
+            // Render interactive pill elements
+            parts.forEach((p, idx) => {
+                const pill = document.createElement('button');
+                pill.type = 'button';
+
+                let colorClasses = 'bg-[#EFE3D3] text-[#3D3231] hover:bg-[#E2D3BF]';
+                if (p.type === 'safe') colorClasses = 'bg-[#EBF2EB] text-[#3D5A3E] border border-[#C1D7C1] hover:bg-[#DCEADA]';
+                if (p.type === 'warning') colorClasses = 'bg-[#FEF6ED] text-[#93521D] border border-[#F3D9C1] hover:bg-[#F8E9D7]';
+                if (p.type === 'danger') colorClasses = 'bg-[#FDF0ED] text-[#9A3836] border border-[#F2C7C3] hover:bg-[#F8E0DC]';
+
+                pill.className = `px-2.5 py-1 rounded-md transition-all cursor-pointer font-mono text-xs sm:text-sm font-semibold flex items-center gap-1 ${colorClasses}`;
+                pill.innerHTML = `<span class="opacity-60 text-[10px] uppercase font-sans">${p.label}:</span> <span>${escapeHtml(p.value)}</span>`;
+
+                pill.onclick = () => showAnatomyDetail(p);
+
+                container.appendChild(pill);
+
+                // Auto-select first or risky element for inspector display
+                if (idx === 0) {
+                    showAnatomyDetail(p);
+                }
+            });
+        }
+
+        function showAnatomyDetail(part) {
+            document.getElementById('anatomyPartBadge').textContent = part.label;
+            document.getElementById('anatomyPartValue').textContent = part.value;
+            document.getElementById('anatomyPartExplanation').textContent = part.explanation;
+            document.getElementById('anatomyPartRiskNote').textContent = part.riskTip;
+        }
+
+
+        /**
+         * Update Verdict Dashboard & Heuristics Grid
+         */
+        function renderDashboard(data) {
+            if (!data || data.invalid) {
+                return;
+            }
+
+            // 1. Update Safety Score & Gauge
+            const score = data.score;
+            document.getElementById('scoreValue').textContent = score;
+
+            // SVG Stroke offset calculation (100 is empty, 0 is full circle)
+            const gaugePath = document.getElementById('scoreGaugePath');
+            const dashOffset = 100 - score;
+            gaugePath.style.strokeDashoffset = dashOffset;
+
+            // Gauge & Verdict Styling
+            const verdictBadge = document.getElementById('verdictBadge');
+            const verdictTitle = document.getElementById('verdictTitle');
+            const verdictSummary = document.getElementById('verdictSummary');
+            const riskLevelTag = document.getElementById('riskLevelTag');
+            const actionRecommendation = document.getElementById('actionRecommendation');
+            const concernsList = document.getElementById('primaryConcernsList');
+
+            concernsList.innerHTML = '';
+
+            if (score >= 80) {
+                // SAFE
+                gaugePath.setAttribute('class', 'text-[#557A56] transition-all duration-1000 ease-out');
+                verdictBadge.className = 'mt-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-[#EBF2EB] text-[#557A56] border border-[#C1D7C1]';
+                verdictBadge.textContent = '🟢 Safe Link';
+
+                verdictTitle.textContent = 'Legitimate & Safe Website Link';
+                verdictSummary.textContent = 'This URL passed security checks. It utilizes secure HTTPS encryption, a legitimate domain structure, and shows no brand impersonation or suspicious characters.';
+
+                riskLevelTag.className = 'text-xs font-semibold px-2.5 py-1 rounded bg-[#EBF2EB] text-[#557A56]';
+                riskLevelTag.textContent = '0 Severe Risks';
+
+                actionRecommendation.className = 'p-3.5 rounded-xl bg-[#EBF2EB] border border-[#C1D7C1] text-xs text-[#3D5A3E] flex items-center gap-2.5';
+                actionRecommendation.innerHTML = `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg><span><strong>Recommendation:</strong> This link appears safe to visit. Always maintain standard web caution.</span>`;
+
+                concernsList.innerHTML = '<li>No security threats or spoofing attempts detected in this web address.</li>';
+
+            } else if (score >= 50) {
+                // SUSPICIOUS
+                gaugePath.setAttribute('class', 'text-[#B87333] transition-all duration-1000 ease-out');
+                verdictBadge.className = 'mt-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-[#FEF6ED] text-[#B87333] border border-[#F3D9C1] pulse-verdict';
+                verdictBadge.textContent = '🟡 Suspicious Link';
+
+                verdictTitle.textContent = 'Suspicious Link - Exercise Caution';
+                verdictSummary.textContent = 'This link contains unusual characteristics such as high-risk top-level domains, multi-layered subdomains, or unencrypted protocols. Exercise heightened caution.';
+
+                riskLevelTag.className = 'text-xs font-semibold px-2.5 py-1 rounded bg-[#FEF6ED] text-[#B87333]';
+                riskLevelTag.textContent = 'Moderate Warnings';
+
+                actionRecommendation.className = 'p-3.5 rounded-xl bg-[#FEF6ED] border border-[#F3D9C1] text-xs text-[#93521D] flex items-center gap-2.5';
+                actionRecommendation.innerHTML = `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg><span><strong>Recommendation:</strong> Do not enter sensitive passwords, financial details, or personal ID on this site.</span>`;
+
+                data.rules.filter(r => r.status !== 'pass').forEach(r => {
+                    const li = document.createElement('li');
+                    li.textContent = `${r.title}: ${r.explanation}`;
+                    concernsList.appendChild(li);
+                });
+
+            } else {
+                // HIGH RISK
+                gaugePath.setAttribute('class', 'text-[#B94A48] transition-all duration-1000 ease-out');
+                verdictBadge.className = 'mt-2 px-3.5 py-1 rounded-full text-xs font-bold tracking-wide uppercase bg-[#FDF0ED] text-[#B94A48] border border-[#F2C7C3] pulse-verdict';
+                verdictBadge.textContent = '🔴 High Risk Link';
+
+                verdictTitle.textContent = 'High Risk Scam / Phishing Threat';
+                verdictSummary.textContent = 'This link exhibits severe phishing indicators, such as brand spoofing, deceptive character redirects, raw IP hostnames, or unencrypted credential forms.';
+
+                const failCount = data.rules.filter(r => r.status === 'fail').length;
+                riskLevelTag.className = 'text-xs font-semibold px-2.5 py-1 rounded bg-[#FDF0ED] text-[#B94A48]';
+                riskLevelTag.textContent = `${failCount} Severe Warnings`;
+
+                actionRecommendation.className = 'p-3.5 rounded-xl bg-[#FDF0ED] border border-[#F2C7C3] text-xs text-[#B94A48] flex items-center gap-2.5';
+                actionRecommendation.innerHTML = `<svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77-1.333.192-3 1.732-3z"/></svg><span><strong>Recommendation:</strong> Do NOT click this link or enter any login credentials or personal passwords.</span>`;
+
+                data.rules.filter(r => r.status !== 'pass').forEach(r => {
+                    const li = document.createElement('li');
+                    li.textContent = `${r.title}: ${r.explanation}`;
+                    concernsList.appendChild(li);
+                });
+            }
+
+            // 2. Render Heuristic Rule Breakdown Cards
+            const grid = document.getElementById('heuristicsGrid');
+            grid.innerHTML = '';
+
+            data.rules.forEach(rule => {
+                const card = document.createElement('div');
+
+                let borderClass = 'border-[#EFE3D3]';
+                let iconBg = 'bg-[#EBF2EB] text-[#557A56]';
+
+                if (rule.status === 'warning') {
+                    borderClass = 'border-[#F3D9C1]';
+                    iconBg = 'bg-[#FEF6ED] text-[#B87333]';
+                } else if (rule.status === 'fail') {
+                    borderClass = 'border-[#F2C7C3]';
+                    iconBg = 'bg-[#FDF0ED] text-[#B94A48]';
+                }
+
+                card.className = `p-5 rounded-xl bg-cream-card border ${borderClass} shadow-sm space-y-3 interactive-hover`;
+
+                card.innerHTML = `
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-[#726362] uppercase tracking-wider">${escapeHtml(rule.title)}</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full ${iconBg}">
+                            ${escapeHtml(rule.badge)}
+                        </span>
+                    </div>
+                    <p class="text-xs text-[#4A3E3D] leading-relaxed">
+                        ${escapeHtml(rule.explanation)}
+                    </p>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            // 3. Render Anatomy
+            renderAnatomy(data);
+        }
+
+
+        function runAnalysis() {
+            const inputVal = document.getElementById('urlInput').value;
+            if (!inputVal) return;
+
+            const analysisData = analyzeURL(inputVal);
+            renderDashboard(analysisData);
+        }
+
+        function loadPreset(key) {
+            if (PRESETS[key]) {
+                document.getElementById('urlInput').value = PRESETS[key];
+                runAnalysis();
+            }
+        }
+
+        function escapeHtml(str) {
+            return String(str)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Event Listeners
+        document.getElementById('analyzeBtn').addEventListener('click', runAnalysis);
+
+        document.getElementById('urlInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                runAnalysis();
+            }
+        });
+
+        // Initialize with default sample link on window load
+        window.onload = function() {
+            runAnalysis();
+        };
+
+    </script>
+</body>
+</html>
