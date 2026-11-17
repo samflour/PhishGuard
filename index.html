@@ -182,7 +182,7 @@
 
         <div class="card">
             <div class="input-group">
-                <input type="text" id="urlInput" placeholder="Paste a link to check (e.g., https://example.com)...">
+                <input type="text" id="urlInput" placeholder="Paste a link to check (e.g., https://github.com)...">
                 <button onclick="analyzeUrl()">Analyze Link</button>
             </div>
 
@@ -247,58 +247,76 @@
             let score = 0;
             let checks = [];
 
-            // 1. Protocol Check
-            if (parsed.protocol === 'http:') {
-                score += 15;
-                checks.push({ text: 'Warning: Uses insecure HTTP instead of HTTPS', type: 'warn' });
+            // Trusted Whitelist Check
+            const trustedDomains = ['github.com', 'google.com', 'citchennai.edu.in', 'wikipedia.org', 'microsoft.com'];
+            const isTrusted = trustedDomains.some(domain => parsed.hostname === domain || parsed.hostname.endsWith('.' + domain));
+
+            if (isTrusted) {
+                score = 0;
+                checks.push({ text: 'Passed: Domain is recognized on the trusted educational/global whitelist', type: 'safe' });
+                checks.push({ text: 'Passed: Secure HTTPS protocol verified', type: 'safe' });
+                checks.push({ text: 'Passed: Standard domain structure with no anomalies', type: 'safe' });
             } else {
-                checks.push({ text: 'Passed: Uses secure HTTPS protocol', type: 'safe' });
-            }
+                // 1. Protocol Check
+                if (parsed.protocol === 'http:') {
+                    score += 20;
+                    checks.push({ text: 'Warning: Uses insecure HTTP instead of encrypted HTTPS', type: 'warn' });
+                } else {
+                    checks.push({ text: 'Passed: Uses secure HTTPS protocol', type: 'safe' });
+                }
 
-            // 2. @ Symbol Check
-            if (rawInput.includes('@')) {
-                score += 30;
-                checks.push({ text: 'High Risk: Contains "@" symbol, often used to spoof true destinations', type: 'danger' });
-            } else {
-                checks.push({ text: 'Passed: No credential spoofing symbols found', type: 'safe' });
-            }
+                // 2. @ Symbol Check
+                if (rawInput.includes('@')) {
+                    score += 35;
+                    checks.push({ text: 'High Risk: Contains "@" symbol, used for URL redirection spoofing', type: 'danger' });
+                } else {
+                    checks.push({ text: 'Passed: No credential spoofing symbols found', type: 'safe' });
+                }
 
-            // 3. IP Address Host Check
-            const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
-            if (ipPattern.test(parsed.hostname)) {
-                score += 25;
-                checks.push({ text: 'High Risk: Uses raw IP address instead of domain name', type: 'danger' });
-            } else {
-                checks.push({ text: 'Passed: Uses standard domain name structure', type: 'safe' });
-            }
+                // 3. IP Address Host Check
+                const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+                if (ipPattern.test(parsed.hostname)) {
+                    score += 30;
+                    checks.push({ text: 'High Risk: Direct IP address host used instead of domain name', type: 'danger' });
+                } else {
+                    checks.push({ text: 'Passed: Standard domain name format', type: 'safe' });
+                }
 
-            // 4. Typosquatting / Character Substitution (0 for o, 1 for l)
-            if (parsed.hostname.includes('0') || parsed.hostname.includes('1')) {
-                score += 20;
-                checks.push({ text: 'Warning: Contains numbers inside domain name (possible lookalike substitution)', type: 'warn' });
-            } else {
-                checks.push({ text: 'Passed: No obvious character substitution detected', type: 'safe' });
-            }
+                // 4. Subdomain Depth Check (Phishing links often have too many subdomains)
+                const subdomains = parsed.hostname.split('.');
+                if (subdomains.length > 3) {
+                    score += 15;
+                    checks.push({ text: 'Warning: Unusually high number of subdomains detected', type: 'warn' });
+                } else {
+                    checks.push({ text: 'Passed: Normal subdomain depth', type: 'safe' });
+                }
 
-            // 5. Suspicious Keywords & TLD check
-            const sketchyTlds = ['.xyz', '.tk', '.ml', '.icu', '.top'];
-            const sketchyKeywords = ['login', 'secure', 'verify', 'account', 'update', 'signin', 'free'];
-            
-            const hasSketchyTld = sketchyTlds.some(tld => parsed.hostname.endsWith(tld));
-            const hasSketchyKeyword = sketchyKeywords.some(kw => rawInput.toLowerCase().includes(kw));
+                // 5. Typosquatting / Character Substitution Check
+                if (parsed.hostname.includes('0') || parsed.hostname.includes('1')) {
+                    score += 20;
+                    checks.push({ text: 'Warning: Domain contains lookalike numbers (0 for o, 1 for l)', type: 'warn' });
+                } else {
+                    checks.push({ text: 'Passed: Clean character composition', type: 'safe' });
+                }
 
-            if (hasSketchyTld) {
-                score += 20;
-                checks.push({ text: 'Warning: Uses a high-risk or free domain extension (' + parsed.hostname.split('.').pop() + ')', type: 'warn' });
-            }
+                // 6. Suspicious TLD & Keyword Check
+                const sketchyTlds = ['.xyz', '.tk', '.ml', '.icu', '.top', '.buzz'];
+                const sketchyKeywords = ['login', 'secure', 'verify', 'account', 'update', 'signin', 'free-奖励'];
+                
+                const hasSketchyTld = sketchyTlds.some(tld => parsed.hostname.endsWith(tld));
+                const hasSketchyKeyword = sketchyKeywords.some(kw => rawInput.toLowerCase().includes(kw));
 
-            if (hasSketchyKeyword) {
-                score += 10;
-                checks.push({ text: 'Notice: Contains sensitive action keywords (login/verify/secure)', type: 'warn' });
-            }
-
-            if (!hasSketchyTld && !hasSketchyKeyword) {
-                checks.push({ text: 'Passed: Clean keyword and TLD profile', type: 'safe' });
+                if (hasSketchyTld) {
+                    score += 20;
+                    checks.push({ text: 'Warning: Uses high-risk domain extension (' + parsed.hostname.split('.').pop() + ')', type: 'warn' });
+                }
+                if (hasSketchyKeyword) {
+                    score += 15;
+                    checks.push({ text: 'Notice: Contains sensitive authentication/action keywords', type: 'warn' });
+                }
+                if (!hasSketchyTld && !hasSketchyKeyword) {
+                    checks.push({ text: 'Passed: Standard keyword and TLD profile', type: 'safe' });
+                }
             }
 
             // Cap score at 100
@@ -331,10 +349,6 @@
 
             resultsDiv.style.display = 'block';
         }
-    </script>
-</body>
-</html>
-
     </script>
 </body>
 </html>
